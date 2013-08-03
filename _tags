@@ -1,0 +1,2 @@
+<*.cm{x,}a>: use_libocamlbuildcpp, package(str)
+<*.byte>: use_libocamlbuildcpp, use_str
