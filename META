@@ -1,0 +1,8 @@
+name = "ocamlbuildcpp"
+version = "0.1"
+description = "helper library to manage c++ compilation process from ocamlbuild"
+
+requires = "str"
+archive(byte) = "ocamlbuildcpp.cma"
+archive(toploop) = "ocamlbuildcpp.cma"
+archive(native) = "ocamlbuildcpp.cmxa"
