@@ -1,18 +1,23 @@
  open Ocamlbuild_plugin
  open Command
  
+ 
 let _ = 
   dispatch begin function
-    | After_rules ->
-      ocaml_lib "ocamlbuildcpp";
+	| Before_rules ->
+	  rule "%.obj -> %.o" ~dep:"%.obj" ~prod:"%.o" (fun env builder ->
+		let obj = env "%.obj" in
+		let o = env "%.o" in
+		mv obj o
+		)
+    | After_rules -> 
+      flag ["link"; "library"; "ocaml"; "byte"]
+        (S[A"-cclib"; A"conf_stubs.o"]);
       
-      flag ["link"; "library"; "ocaml"; "byte"; "use_libocamlbuildcpp"]
-        (S[A"-dllib"; A"-locamlbuildcpp"]);
+      flag ["link"; "library"; "ocaml"; "native"]
+        (S[A"-cclib"; A"conf_stubs.o"]);
       
-      flag ["link"; "library"; "ocaml"; "native"; "use_libocamlbuildcpp"]
-        (S[A"-cclib"; A"-locamlbuildcpp"]);
-      
-      dep  ["link"; "ocaml"; "use_libocamlbuildcpp"] 
-        ["dllocamlbuildcpp.so" ; "libocamlbuildcpp.a"]
+      dep  ["link"; "ocaml"; "library"] 
+        ["conf_stubs.o"]
     | _ -> ()
   end

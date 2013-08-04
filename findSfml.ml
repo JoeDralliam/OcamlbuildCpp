@@ -88,6 +88,7 @@ let extract_version sfml_include_dir =
  **)
 let find ?(static=false) cppcompiler components =
   let suffix = if static then "-s" else "" in
+  
   let paths =
     ["~/Library/Frameworks" ; "/Library/Frameworks" ; 
      "/usr/local" ; "/usr" ; "/sw" ;
