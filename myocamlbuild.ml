@@ -10,14 +10,19 @@ let _ =
 		let o = env "%.o" in
 		mv obj o
 		)
-    | After_rules -> 
-      flag ["link"; "library"; "ocaml"; "byte"]
-        (S[A"-cclib"; A"conf_stubs.o"]);
+    | After_rules ->
+		let archive =
+			if Sys.os_type = "Win32"
+			then ("libconf_stubs.lib")
+			else ("libconf_stubs.a")
+		in
+		flag ["link"; "library"; "ocaml"; "byte"]
+			(S[A"-cclib"; A"-lconf_stubs"]);
       
-      flag ["link"; "library"; "ocaml"; "native"]
-        (S[A"-cclib"; A"conf_stubs.o"]);
+		flag ["link"; "library"; "ocaml"; "native"]
+			(S[A"-cclib"; A"-lconf_stubs"]);
       
-      dep  ["link"; "ocaml"; "library"] 
-        ["conf_stubs.o"]
+		dep ["link"; "ocaml"; "library"]
+			[archive]
     | _ -> ()
   end
