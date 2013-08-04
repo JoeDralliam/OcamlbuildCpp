@@ -14,7 +14,7 @@ const os current_os = os_linux;
 #elif defined(_WIN32)
 const os current_os = os_windows;
 #elif defined(__APPLE__) && defined(__MACH__)
-const is current_os = os_mac;
+const os current_os = os_mac;
 #else
 #error "Unsupported OS"
 #endif
