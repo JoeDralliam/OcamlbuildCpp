@@ -123,5 +123,9 @@ struct
       | Conf.OS.Mac -> "so" 
       | Conf.OS.Windows -> "dll"
 
-
+  let soname filename =
+    let regexp = Str.regexp ".*lib\\([^/]+\\)\\.so" in
+    if Str.string_match regexp filename 0
+    then Some (Str.matched_group 1 filename)
+    else None 
 end
