@@ -10,13 +10,13 @@ let maybe_available =
 
 let is_available comp =
   let cmd = match comp with
-    | Gcc -> "g++ --version >/dev/null"
-    | Clang -> "clang++ --version >/dev/null"
-    | MSVC -> "cl.exe /HELP > NUL"
-    | MinGW -> "g++ --version > NUL"
-    | Cygwin -> "g++ --version > NUL"
+    | Gcc -> "g++ --version"
+    | Clang -> "clang++ --version"
+    | MSVC -> "cl.exe /HELP"
+    | MinGW -> "g++ --version"
+    | Cygwin -> "g++ --version"
   in
-  (Sys.command cmd) <> 1
+  (Sys.command cmd) = 0
 
 let available () =
   List.filter is_available maybe_available
@@ -121,7 +121,7 @@ struct
     match Conf.OS.current with
       | Conf.OS.Linux -> "so"
       | Conf.OS.Mac -> "so" 
-      | Conf.OS.Windows -> "dll"
+      | Conf.OS.Windows -> "s.obj"
 
   let soname filename =
     let regexp = Str.regexp ".*lib\\([^/]+\\)\\.so" in
