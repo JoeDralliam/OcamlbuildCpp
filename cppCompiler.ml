@@ -1,13 +1,23 @@
+
+
+
+
+
+
+
 type t = Gcc | Clang | MSVC | MinGW | Cygwin
 
-type front = GccCompatible | MSVCCompatible
+type front = GccCompatible | MSVCCompatible           
+
+external default_compiler : unit -> t = "conf_compiler"
 
 let maybe_available =
-  match Conf.OS.current with
-  | Conf.OS.Linux -> [ Gcc ; Clang ]
-  | Conf.OS.Mac -> [ Clang ; Gcc ]
-  | Conf.OS.Windows -> [ MSVC ; MinGW ; Cygwin ]
-
+  (default_compiler ()) ::
+    match Conf.OS.current with
+    | Conf.OS.Linux -> [ Gcc ; Clang ]
+    | Conf.OS.Mac -> [ Clang ; Gcc ]
+    | Conf.OS.Windows -> [ MSVC ; MinGW ; Cygwin ]
+                         
 let is_available comp =
   let cmd = match comp with
     | Gcc -> "g++ --version"
@@ -129,3 +139,36 @@ struct
     then Some (Str.matched_group 1 filename)
     else None 
 end
+
+module Version =
+struct
+  type t = { major: int ; minor : int }
+
+  external msvc_major : unit -> int = "conf_msvc_version_major"
+  external msvc_minor : unit -> int = "conf_msvc_version_minor"
+
+  let detect comp =
+    if comp = MSVC
+    then { major = msvc_major () ; minor = msvc_minor () }
+    else 
+      let dumpcom = (BuildFlags.command comp) ^ " -dumpversion" in
+      let version_str = input_line (Unix.open_process_in dumpcom) in
+      let regexp = Str.regexp "\\([0-9]\\)\\.\\([0-9]\\)(\\.[0-9])?" in
+      if Str.string_match regexp version_str 0
+      then { major = int_of_string (Str.matched_group 1 version_str) ;
+             minor = int_of_string (Str.matched_group 2 version_str) }
+      else failwith "Could not detect compiler version"
+
+  let dumpversion comp =
+    if comp = MSVC
+    then string_of_int (msvc_major () * 100 + msvc_minor ())
+    else 
+      let dumpcom = (BuildFlags.command comp) ^ " -dumpversion" in
+      let version_str = input_line (Unix.open_process_in dumpcom) in
+      let regexp = Str.regexp "\\([0-9]\\)\\.\\([0-9]\\)(\\.[0-9])?" in
+      if Str.string_match regexp version_str 0
+      then (Str.matched_group 1 version_str) ^ (Str.matched_group 2 version_str)
+      else ""
+    
+end
+

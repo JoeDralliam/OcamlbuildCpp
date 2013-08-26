@@ -1,5 +1,8 @@
 Conf
 CppCompiler
 File
+Env
+Find
 FindSfml
+FindBoost
 Rule

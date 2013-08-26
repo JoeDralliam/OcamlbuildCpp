@@ -1,2 +1,2 @@
-<*.cm{x,}a>: use_libconf_stubs, use_libocamlbuildcpp, package(str)
-<*.byte>: use_libocamlbuildcpp, use_str
+<*.cm{x,}a>: use_libconf_stubs, use_libocamlbuildcpp, package(str), package(unix), package(ocamlbuild)
+<*.ml>: package(str), package(unix), package(ocamlbuild)

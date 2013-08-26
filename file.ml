@@ -6,7 +6,11 @@
 let whereis ?(paths=[]) ?(path_suffixes=[""]) file =
   let fullpaths = List.fold_right (fun p fullpaths ->
       List.fold_right (fun suf fullpaths -> 
-          (p ^ "/" ^ suf) :: fullpaths
+          let fullpath = 
+            if suf <> "" 
+            then (p ^ "/" ^ suf)
+            else p
+          in fullpath :: fullpaths
         ) path_suffixes fullpaths
     ) paths [] 
   in
@@ -47,4 +51,13 @@ let find_library ?(paths=[]) ?(path_suffixes=[""]) ~static name cppcompiler =
     else
       raise Not_found
 
+
+let rec find_library_n ?(paths=[]) ?(path_suffixes=[""]) ~static names cppcompiler =
+  match names with
+  | [] -> raise Not_found
+  | name :: names ->
+    try 
+      find_library ~paths ~path_suffixes ~static name cppcompiler
+    with Not_found ->
+      find_library_n ~paths ~path_suffixes ~static names cppcompiler
 
