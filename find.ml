@@ -73,7 +73,7 @@ struct
       then includedir := Some (Env.get env)
     ) LibraryConfiguration.includedir_env_variables ;    
     match !includedir with
-    | Some dir -> dir
+    | Some dir -> (dir,LibraryConfiguration.includedir_file)
     | None ->
       let paths = get_includedir_search_paths ?root () in
       let path_suffixes = LibraryConfiguration.includedir_search_paths_suffixes in
@@ -107,8 +107,8 @@ struct
 
   let find ?root ?includedir ?(static=false) cppcompiler components =
     let root = get_root ?root () in
-    let includedir = get_includedir ?includedir ?root () in
-    let version = LibraryConfiguration.extract_version includedir in
+    let includedir, includedir_file = get_includedir ?includedir ?root () in
+    let version = LibraryConfiguration.extract_version (includedir ^ "/" ^ includedir_file) in
     let library_search_dirs = get_library_search_dirs ?root includedir version in
     let libraries = ref LibraryMap.empty in
     List.iter (try_add_component ~static ~cppcompiler library_search_dirs libraries version) components ;

@@ -1,9 +1,15 @@
 
+let framework_header_file file =
+  let reg = Str.regexp "\\([A-Za-z][A-Za-z0-9_]*\\)/\\([A-Za-z][A-Za-z0-9_]*\\.hpp\\)" in
+  if Str.string_match reg file 0
+  then Some (Str.matched_group 1 file ^ ".framework/Headers/" ^ Str.matched_group 2 file)
+  else None
+
 
 (**
   @raise Not_found
  **)
-let whereis ?(paths=[]) ?(path_suffixes=[""]) file =
+let whereis_impl ?(paths=[]) ?(path_suffixes=[""]) file =
   let fullpaths = List.fold_right (fun p fullpaths ->
       List.fold_right (fun suf fullpaths -> 
           let fullpath = 
@@ -18,6 +24,19 @@ let whereis ?(paths=[]) ?(path_suffixes=[""]) file =
       Sys.file_exists (p ^ "/" ^ file)
     ) fullpaths
 
+let whereis ?(paths=[]) ?(path_suffixes=[""]) file =
+  let (file,otherwise) =
+     if Conf.OS.(current = Mac)
+     then match framework_header_file file with
+          | Some fk -> (fk,Some file)
+          | None -> (file,None)
+      else (file,None)
+   in
+   try (whereis_impl ~paths ~path_suffixes file, file)
+   with Not_found ->
+       match otherwise with
+       | Some file -> (whereis_impl ~paths ~path_suffixes file, file)
+       | None -> raise Not_found 
 
 let find_library ?(paths=[]) ?(path_suffixes=[""]) ~static name cppcompiler =
   let open CppCompiler.Library in
@@ -29,7 +48,7 @@ let find_library ?(paths=[]) ?(path_suffixes=[""]) ~static name cppcompiler =
       then  static_library_filename name cppcompiler
       else dynamic_library_filename name cppcompiler
     in
-    let path = whereis ~paths ~path_suffixes filename in
+    let path = whereis_impl ~paths ~path_suffixes filename in
     if Mac.(!policy = PreferFramework)
     then Framework (path, name)
     else Library (path ^ "/" ^ filename)
@@ -43,7 +62,7 @@ let find_library ?(paths=[]) ?(path_suffixes=[""]) ~static name cppcompiler =
         then  static_library_filename name cppcompiler
         else dynamic_library_filename name cppcompiler
       in
-      let path = whereis ~paths ~path_suffixes filename in
+      let path = whereis_impl ~paths ~path_suffixes filename in
       if Mac.(!policy <> PreferFramework)
       then Framework (path, name)
       else Library (path ^ "/" ^ filename)          

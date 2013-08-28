@@ -19,8 +19,7 @@ struct
     }
   type human_version = version  
 
-  let extract_version sfml_include_dir =
-    let config_hpp = sfml_include_dir ^ "/SFML/Config.hpp" in
+  let extract_version config_hpp =
     let chan = open_in config_hpp in
 
 
@@ -62,13 +61,13 @@ struct
     ["~/Library/Frameworks" ; "/Library/Frameworks" ; 
      "/usr/local" ; "/usr" ; "/sw" ;
      "/opt/local" ; "/opt/csw" ; "/opt"]
-  let includedir_search_paths_suffixes = ["include"]
+  let includedir_search_paths_suffixes = ["" ; "include"]
   let includedir_file = "SFML/Config.hpp"
 
   let library_search_dirs_from_root rt = [rt]
   let library_search_dirs_from_includedir _ = [] 
   let library_search_dirs_system _ = includedir_search_paths_system
-  let library_search_dirs_suffixes = [ "lib" ; "lib64" ]
+  let library_search_dirs_suffixes = [ "" ; "lib" ; "lib64" ]
   let library_names ~static ~cppcompiler component _ =
     let suffix = if static then "-s" else "" in  
     let component_string = string_of_component component in

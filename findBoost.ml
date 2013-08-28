@@ -72,8 +72,7 @@ struct
 
 
 
-  let extract_version boost_includedir =
-    let version_hpp = boost_includedir ^ "/boost/version.hpp" in
+  let extract_version version_hpp =
     let chan = open_in version_hpp in
 
 

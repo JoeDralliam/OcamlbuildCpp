@@ -134,7 +134,7 @@ struct
       | Conf.OS.Windows -> "s.obj"
 
   let soname filename =
-    let regexp = Str.regexp ".*lib\\([^/]+\\)\\.so" in
+    let regexp = Str.regexp ".*lib\\([^/]+\\)\\.\\(so\\|dylib\\)" in
     if Str.string_match regexp filename 0
     then Some (Str.matched_group 1 filename)
     else None 
