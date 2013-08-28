@@ -111,7 +111,7 @@ struct
   let includedir_search_paths_from_root rt = [rt ^ "/include" ; rt]
   let includedir_search_paths_system = 
     [ "C:/boost/include" ; "C:/boost" ] @
-      (Env.do_default "ProgramFiles" (fun pf -> [pf ^ "/boost/include" ; pf ^ "/boost"]) []) @
+      (Env.do_with_default "ProgramFiles" (fun pf -> [pf ^ "/boost/include" ; pf ^ "/boost"]) []) @
       ["/usr/local/include" ; "/usr/include" ; "/sw/local/include"]
   let includedir_search_paths_suffixes =
     let p = List.map (fun v ->
@@ -129,7 +129,7 @@ struct
     [ includedir ^ "/lib" ; includedir ^ "/../lib" ; includedir ^ "/stage/lib"]
   let library_search_dirs_system (version,_) =
     [ "C:/boost/lib" ; "C:/boost"] @
-      (Env.do_default "ProgramFiles"
+      (Env.do_with_default "ProgramFiles"
          (fun pf -> [ pf ^ "/boost/boost_" ^ (string_of_version_with_patch version) ^ "/lib" ;
                       pf ^ "/boost/boost_" ^ (string_of_version version) ^ "/lib" ;
                       pf ^ "/boost/lib" ; pf ^ "/boost"]) []) @
@@ -296,7 +296,7 @@ let find
   in
   let include_search_dirs_system =
     [ "C:/boost/include" ; "C:/boost" ] @
-      (Env.do_default "ProgramFiles" (fun pf -> [pf ^ "/boost/include" ; pf ^ "/boost"]) []) @
+      (Env.do_with_default "ProgramFiles" (fun pf -> [pf ^ "/boost/include" ; pf ^ "/boost"]) []) @
       ["/usr/local/include" ; "/usr/include" ; "/sw/local/include"]
   in
   let boost_root = ref None in
@@ -368,7 +368,7 @@ let find
   in
   let library_search_dirs_system =
     [ "C:/boost/lib" ; "C:/boost"] @
-      (Env.do_default "ProgramFiles"
+      (Env.do_with_default "ProgramFiles"
          (fun pf -> [ pf ^ "/boost/boost_" ^ (string_of_version_with_patch version) ^ "/lib" ;
                       pf ^ "/boost/boost_" ^ (string_of_version version) ^ "/lib" ;
                       pf ^ "/boost/lib" ; pf ^ "/boost"]) []) @

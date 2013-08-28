@@ -26,7 +26,7 @@ let is_available comp =
     | MinGW -> "g++ --version"
     | Cygwin -> "g++ --version"
   in
-  (Sys.command cmd) = 0
+  (Unix.close_process_in (Unix.open_process_in cmd)) <> Unix.WEXITED 127
 
 let available () =
   List.filter is_available maybe_available

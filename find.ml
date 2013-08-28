@@ -52,7 +52,7 @@ struct
   let get_root ?root () =
     let root = ref root in
     List.iter (fun env ->
-      if !root = None && (Env.get_default env "") <> ""
+      if !root = None && (Env.get_with_default env "") <> ""
       then root := Some (Env.get env)
     ) LibraryConfiguration.root_env_variables ;
     !root
@@ -69,7 +69,7 @@ struct
   let get_includedir ?root ?includedir () =
     let includedir = ref includedir in
     List.iter (fun env ->
-      if !includedir = None && (Env.get_default env "") <> ""
+      if !includedir = None && (Env.get_with_default env "") <> ""
       then includedir := Some (Env.get env)
     ) LibraryConfiguration.includedir_env_variables ;    
     match !includedir with
