@@ -115,4 +115,5 @@ let for_each_line filename f =
     done ;
     assert false
   with 
-    | Not_found -> ()
+    | End_of_file -> 
+      close_in chan

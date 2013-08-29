@@ -5,8 +5,7 @@ type front = GccCompatible | MSVCCompatible
 external default_compiler : unit -> t = "conf_compiler"
 
 let maybe_available =
-  (default_compiler ()) ::
-    match Conf.OS.current with
+  match Conf.OS.current with
     | Conf.OS.Linux -> [ Gcc ; Clang ]
     | Conf.OS.Mac -> [ Clang ; Gcc ]
     | Conf.OS.Windows -> [ MSVC ; MinGW ; Cygwin ]

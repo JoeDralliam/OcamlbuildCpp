@@ -21,7 +21,9 @@ install: uninstall
 					_build/find.cm[i,x,o] \
 					_build/findSfml.cm[i,x,o] \
 					_build/findBoost.cm[i,x,o] \
-					_build/rule.cm[i,x,o]
+					_build/rule.cm[i,x,o] \
+					_build/cppLibrary.cm[i,x,o]
+
 uninstall:
 	ocamlfind remove ocamlbuildcpp
 
