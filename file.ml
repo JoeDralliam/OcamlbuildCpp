@@ -1,5 +1,8 @@
 
 
+
+
+
 (**
    may_retry f args: apply f to args until success **)
 let rec may_retry f = function
@@ -102,3 +105,14 @@ let find_library ?(paths=[]) ?(path_suffixes=[""]) ~static cppcompiler names =
   match may_retry (find_library_impl fullpaths ~static cppcompiler) names with
     | Some (lib, _) -> lib
     | None -> raise Not_found
+
+
+let for_each_line filename f =
+  let chan = open_in filename in
+  try
+    while true do
+      f (input_line chan)
+    done ;
+    assert false
+  with 
+    | Not_found -> ()

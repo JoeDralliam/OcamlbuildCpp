@@ -20,16 +20,10 @@ struct
   type human_version = version  
 
   let extract_version config_hpp =
-    let chan = open_in config_hpp in
-
-
     (* If not found, < 2.0 and minor is unknown *)
     let major = ref 1 in
     let minor = ref (-1) in
-    try
-      while true do
-        let line = input_line chan in
-
+    File.for_each_line config_hpp (fun line ->
         let maj_reg = Str.regexp "#define SFML_VERSION_MAJOR \\([0-9]+\\)" in
         if Str.string_match maj_reg line 0
         then (
@@ -43,13 +37,11 @@ struct
           let min_str = Str.matched_group 1 line in
           minor := int_of_string min_str
         )
-      done ;
-      assert false
-    with End_of_file -> 
-      { 
-        major = !major ; 
-        minor = !minor
-      }
+    ) ;
+    { 
+      major = !major ; 
+      minor = !minor
+    }
 
   let name = "SFML"
 

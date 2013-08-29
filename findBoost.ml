@@ -73,15 +73,9 @@ struct
 
 
   let extract_version version_hpp =
-    let chan = open_in version_hpp in
-
-
     let version = ref 0 in
     let lib_version = ref "" in
-    try
-      while true do
-        let line = input_line chan in
-
+    for_each_line wersion_hpp (fun line ->
         let version_reg = Str.regexp "#define BOOST_VERSION \\([0-9]+\\).*" in
         if Str.string_match version_reg line 0
         then (
@@ -94,11 +88,10 @@ struct
         then (
           lib_version := Str.matched_group 1 line
         )
-      done ;
-      assert false
-    with End_of_file -> 
-      ( { major = !version / 100_000 ; minor = (!version / 100) mod 1_000 ; patch = !version mod 100 } , 
-        !lib_version)
+    ) ;
+
+    ( { major = !version / 100_000 ; minor = (!version / 100) mod 1_000 ; patch = !version mod 100 } , 
+      !lib_version )
 
 
   let name = "boost"
@@ -134,14 +127,14 @@ struct
                       pf ^ "/boost/lib" ; pf ^ "/boost"]) []) @
       ["/sw/local/lib" ; "/usr/local/lib" ; "/usr/lib" ]
   let library_search_dirs_suffixes = [""]
-
+    
   let library_names ~static ~cppcompiler component (version, lib_version) =
     let lib_prefix =
       if Conf.OS.(current = Windows) && static && cppcompiler <> Cygwin
       then "lib"
       else ""
     in
-
+    
     let compiler = guess_compiler_prefix cppcompiler version in
     let multithreaded_suffix =
       if !multithreaded
@@ -149,10 +142,12 @@ struct
       else ""
     in
     let compname = component_name component in
-    [Printf.sprintf "%sboost_%s%s%s-%s" lib_prefix compname compiler multithreaded_suffix lib_version ;
-     Printf.sprintf "%sboost_%s%s%s" lib_prefix compname compiler multithreaded_suffix ;
-     Printf.sprintf "%sboost_%s%s-%s" lib_prefix compname multithreaded_suffix lib_version ;
-     Printf.sprintf "%sboost_%s%s" lib_prefix compname multithreaded_suffix ;
+    let abi_release_tag = if static then "-s" else ""
+
+    [Printf.sprintf "%sboost_%s%s%s%s-%s" lib_prefix compname compiler multithreaded_suffix release_abi_tag lib_version ;
+     Printf.sprintf "%sboost_%s%s%s%s" lib_prefix compname compiler multithreaded_suffix release_abi_tag ;
+     Printf.sprintf "%sboost_%s%s%s-%s" lib_prefix compname multithreaded_suffix release_abi_tag lib_version ;
+     Printf.sprintf "%sboost_%s%s%s" lib_prefix compname multithreaded_suffix release_abi_tag ;
      Printf.sprintf "%sboost_%s" lib_prefix compname]
 
   let as_human_version = fst 
