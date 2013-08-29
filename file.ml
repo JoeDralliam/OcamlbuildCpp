@@ -27,7 +27,6 @@ let whereis fullpaths file =
 
 
 
-
 let find_file ?(paths=[]) ?(path_suffixes=[""]) file = 
   let fullpaths = List.fold_right (fun p fullpaths ->
       List.fold_right (fun suf fullpaths -> 
@@ -88,7 +87,7 @@ let find_library_impl fullpaths ~static cppcompiler name =
 
 
 
-let rec find_library ?(paths=[]) ?(path_suffixes=[""]) ~static cppcompiler names =
+let find_library ?(paths=[]) ?(path_suffixes=[""]) ~static cppcompiler names =
   let fullpaths = List.fold_right (fun p fullpaths ->
       List.fold_right (fun suf fullpaths -> 
           let fullpath = 
