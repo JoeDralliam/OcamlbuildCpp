@@ -46,9 +46,6 @@ struct
     }
 
 
-
-
-
   let get_root ?root () =
     let root = ref root in
     List.iter (fun env ->
@@ -78,7 +75,7 @@ struct
       let paths = get_includedir_search_paths ?root () in
       let path_suffixes = LibraryConfiguration.includedir_search_paths_suffixes in
       try
-        File.whereis ~paths ~path_suffixes LibraryConfiguration.includedir_file
+        File.find_file ~paths ~path_suffixes LibraryConfiguration.includedir_file
       with
       | Not_found -> raise (IncludeDirectoryNotFound LibraryConfiguration.name)
 
@@ -100,7 +97,7 @@ struct
     let names = LibraryConfiguration.library_names ~static ~cppcompiler component version in
     let path_suffixes = LibraryConfiguration.library_search_dirs_suffixes in
     try 
-      let lib = File.find_library_n ~paths:library_search_dirs ~path_suffixes ~static names cppcompiler in
+      let lib =  File.find_library ~paths:library_search_dirs ~path_suffixes ~static cppcompiler names in
       libraries := LibraryMap.add component lib !libraries
     with 
       Not_found -> ()

@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 type t = Gcc | Clang | MSVC | MinGW | Cygwin
 
 type front = GccCompatible | MSVCCompatible           
