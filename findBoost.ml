@@ -75,7 +75,7 @@ struct
   let extract_version version_hpp =
     let version = ref 0 in
     let lib_version = ref "" in
-    for_each_line wersion_hpp (fun line ->
+    File.for_each_line version_hpp (fun line ->
         let version_reg = Str.regexp "#define BOOST_VERSION \\([0-9]+\\).*" in
         if Str.string_match version_reg line 0
         then (
@@ -142,12 +142,12 @@ struct
       else ""
     in
     let compname = component_name component in
-    let abi_release_tag = if static then "-s" else ""
+    let abi_release_tag = if static then "-s" else "" in
 
-    [Printf.sprintf "%sboost_%s%s%s%s-%s" lib_prefix compname compiler multithreaded_suffix release_abi_tag lib_version ;
-     Printf.sprintf "%sboost_%s%s%s%s" lib_prefix compname compiler multithreaded_suffix release_abi_tag ;
-     Printf.sprintf "%sboost_%s%s%s-%s" lib_prefix compname multithreaded_suffix release_abi_tag lib_version ;
-     Printf.sprintf "%sboost_%s%s%s" lib_prefix compname multithreaded_suffix release_abi_tag ;
+    [Printf.sprintf "%sboost_%s%s%s%s-%s" lib_prefix compname compiler multithreaded_suffix abi_release_tag lib_version ;
+     Printf.sprintf "%sboost_%s%s%s%s" lib_prefix compname compiler multithreaded_suffix abi_release_tag ;
+     Printf.sprintf "%sboost_%s%s%s-%s" lib_prefix compname multithreaded_suffix abi_release_tag lib_version ;
+     Printf.sprintf "%sboost_%s%s%s" lib_prefix compname multithreaded_suffix abi_release_tag ;
      Printf.sprintf "%sboost_%s" lib_prefix compname]
 
   let as_human_version = fst 
