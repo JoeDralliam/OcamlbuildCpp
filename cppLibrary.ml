@@ -11,18 +11,17 @@ let register ?(libraries=[]) ?includedir name compiler =
 
   let link_one to_c lib =
     let open CppCompiler.Library in
-    match lib with
-      | Library filename -> ( 
-	match soname filename with
-	  | Some name -> A ("-l" ^ name)
-	  | None -> 
-          if to_c then A filename
-          else S []
-      )
-      | Framework (path, name) -> S [A ("-F" ^ path) ; A "-framework" ; A name]
+    match lib.kind with
+      | Library -> 
+	if to_c
+	then A (lib.path ^ "/" ^ lib.identifier)
+	else S []
+      | Shared    -> S [A ("-L" ^ lib.path) ; A ("-l" ^ lib.identifier) ]
+      | Framework -> S [A ("-F" ^ lib.path) ; A "-framework" ; A lib.identifier]
   in
 
   List.iter (fun library ->
-    flag [ "ocamlmklib" ; "link" ; "c" ; "use_"^name] (link_one true library) ;
-    flag [ "ocamlmklib" ; "link" ; "ocaml" ; "use_"^name] (link_one false library)
+    flag [ "ocamlmklib" ; "c" ; "use_"^name] (link_one true library) ;
+    flag [ "ocamlmklib" ; "ocaml" ; "use_"^name] (link_one false library)
   ) libraries
+

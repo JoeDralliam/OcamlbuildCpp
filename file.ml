@@ -82,10 +82,7 @@ let find_library_impl fullpaths ~static cppcompiler name =
     else [ library_filename name ]
   in
   match may_retry (whereis fullpaths) files_to_look with
-    | Some (path, filename) ->
-      if Ocamlbuild_plugin.Pathname.check_extension filename "framework"
-      then Some (Framework (path, name))
-      else Some (Library (path ^ "/" ^ filename))
+    | Some (path, filename) -> Some (library_of_file path filename)
     | None -> None
 
 

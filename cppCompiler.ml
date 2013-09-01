@@ -78,10 +78,31 @@ end
 
 module Library =
 struct
-  type t =
-      Library of string (* filename (with path) or -lname *)
-    | Framework of string * string (* path, library name *)
+  type kind =
+      Library (* a, lib ou dll *)
+    | Shared (* so ou dylib *)
+    | Framework
 
+  type t =
+      {
+	kind:kind ;
+	identifier:string ; (* name or path *)
+	path:string
+      }
+
+  let library_of_file path file =
+    let open Ocamlbuild_plugin.Pathname in
+    let file_ext = get_extension file in
+    let (kind,identifier) = 
+      match file_ext with
+	| "framework" -> (Framework, remove_extension file)
+	| "so" | "dylib" -> 
+	  let libname = remove_extension file in
+	  let l = String.length libname - 3 in
+	    (Shared, String.sub libname 3 l)
+	| _ -> (Library, file)
+    in
+    { kind ; identifier ; path }
 
   module Mac =
   struct
@@ -125,11 +146,12 @@ struct
       | Conf.OS.Mac -> "so" 
       | Conf.OS.Windows -> "s.obj"
 
-  let soname filename =
+(*  let soname filename =
     let regexp = Str.regexp ".*lib\\([^/]+\\)\\.\\(so\\|dylib\\)" in
     if Str.string_match regexp filename 0
     then Some (Str.matched_group 1 filename)
     else None 
+*)
 end
 
 module Version =
