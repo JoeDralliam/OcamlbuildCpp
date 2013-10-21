@@ -1,3 +1,5 @@
+open OcamlbuildCppConfiguration
+
 exception IncludeDirectoryNotFound of string
 
 module type LibraryConfigurationType =
@@ -21,7 +23,7 @@ sig
   val library_search_dirs_system : version -> string list
   val library_search_dirs_suffixes : string list
 
-  val library_names : static:bool -> cppcompiler:CppCompiler.t -> component -> version -> string list
+  val library_names : static:bool -> cppcompiler:Compiler.t -> component -> version -> string list
   val extract_version : string -> version
   val as_human_version : version -> human_version
 end
@@ -41,7 +43,7 @@ struct
   type t =
     {
       includedir: string ;
-      library: CppCompiler.Library.t LibraryMap.t ;
+      library: Compiler.Library.t LibraryMap.t ;
       version: version
     }
 

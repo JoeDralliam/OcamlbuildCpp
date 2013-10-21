@@ -1,33 +1,48 @@
-type t = Gcc | Clang | MSVC | MinGW | Cygwin
+open OcamlbuildCppConfiguration
+
+
+type compiler = Gcc | Clang | MSVC | MinGW | Cygwin
+type t = compiler * string
 
 type front = GccCompatible | MSVCCompatible           
 
 external default_compiler : unit -> t = "conf_compiler"
 
 let maybe_available =
-  match Conf.OS.current with
-    | Conf.OS.Linux -> [ Gcc ; Clang ]
-    | Conf.OS.Mac -> [ Clang ; Gcc ]
-    | Conf.OS.Windows -> [ MSVC ; MinGW ; Cygwin ]
-                         
-let is_available comp =
-  let cmd = match comp with
-    | Gcc -> "g++ --version"
-    | Clang -> "clang++ --version"
-    | MSVC -> "cl.exe /HELP"
-    | MinGW -> "g++ --version"
-    | Cygwin -> "g++ --version"
+  match OS.current with
+    | OS.Linux -> [ Gcc ; Clang ]
+    | OS.Mac -> [ Clang ; Gcc ]
+    | OS.Windows -> [ MSVC ; MinGW ; Cygwin ]
+
+let fullpath comp =
+  let cmd = 
+    match comp with
+      | Gcc -> "g++"
+      | Clang -> "clang++"
+      | MSVC -> "cl.exe"
+      | MinGW -> "g++"
+      | Cygwin -> "g++"
   in
-  (Unix.close_process_in (Unix.open_process_in cmd)) <> Unix.WEXITED 127
+  try
+    Some (Ocamlbuild_plugin.Command.search_in_path cmd)
+  with
+    | Not_found -> None
 
 let available () =
-  List.filter is_available maybe_available
+  List.fold_right (
+    fun comp lst -> 
+      match fullpath comp with
+	| Some fullpath -> (comp, fullpath) :: lst
+	| None -> lst
+  ) maybe_available []
 
-let frontend = function
-  | Gcc | Clang | MinGW | Cygwin -> GccCompatible
-  | MSVC -> MSVCCompatible
+let frontend (comp,_) =
+  match comp with
+    | Gcc | Clang | MinGW | Cygwin -> GccCompatible
+    | MSVC -> MSVCCompatible
 
-let name = function
+let name (comp,_) = 
+  match comp with
     | Gcc -> "gcc"
     | Clang -> "clang"
     | MSVC -> "msvc"
@@ -42,12 +57,7 @@ let object_extension comp =
 module BuildFlags =
 struct
 
-  let command = function
-    | Gcc -> "g++"
-    | Clang -> "clang++"
-    | MSVC -> "cl.exe"
-    | MinGW -> "g++"
-    | Cygwin -> "g++"
+  let command = snd
 
 
   let release comp =
@@ -109,7 +119,7 @@ struct
     type policy = PreferLibrary | PreferFramework
                   
     let policy = 
-      if Conf.OS.current = Conf.OS.Mac
+      if OS.current = OS.Mac
       then ref PreferFramework
       else ref PreferLibrary
 
@@ -129,22 +139,15 @@ struct
       | MSVCCompatible -> name ^ ".lib"
 
   let dynamic_library_filename name comp =
-    match Conf.OS.current with
-      | Conf.OS.Linux -> "lib" ^ name ^ ".so"
-      | Conf.OS.Mac -> "lib" ^ name ^ ".dylib" 
-      | Conf.OS.Windows when comp = MSVC -> name ^ ".lib"
-      | Conf.OS.Windows -> "lib" ^ name ^ ".a"
+    match OS.current with
+      | OS.Linux -> "lib" ^ name ^ ".so"
+      | OS.Mac -> "lib" ^ name ^ ".dylib" 
+      | OS.Windows when fst comp = MSVC -> name ^ ".lib"
+      | OS.Windows -> "lib" ^ name ^ ".a"
 
-  let caml_static_extension comp = 
-    match frontend comp with
-      | GccCompatible -> "a"
-      | MSVCCompatible -> "lib"
+  let caml_static_extension comp = !Ocamlbuild_plugin.Options.ext_lib
 
-  let caml_dynamic_extension comp = 
-    match Conf.OS.current with
-      | Conf.OS.Linux -> "so"
-      | Conf.OS.Mac -> "so" 
-      | Conf.OS.Windows -> "s.obj"
+  let caml_dynamic_extension comp = !Ocamlbuild_plugin.Options.ext_dll
 
 (*  let soname filename =
     let regexp = Str.regexp ".*lib\\([^/]+\\)\\.\\(so\\|dylib\\)" in
@@ -162,7 +165,7 @@ struct
   external msvc_minor : unit -> int = "conf_msvc_version_minor"
 
   let detect comp =
-    if comp = MSVC
+    if fst comp = MSVC
     then { major = msvc_major () ; minor = msvc_minor () }
     else 
       let dumpcom = (BuildFlags.command comp) ^ " -dumpversion" in
@@ -174,7 +177,7 @@ struct
       else failwith "Could not detect compiler version"
 
   let dumpversion comp =
-    if comp = MSVC
+    if (fst comp) = MSVC
     then string_of_int (msvc_major () * 100 + msvc_minor ())
     else 
       let dumpcom = (BuildFlags.command comp) ^ " -dumpversion" in

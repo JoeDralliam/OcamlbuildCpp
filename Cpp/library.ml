@@ -3,14 +3,14 @@ open Ocamlbuild_plugin
 let register ?(libraries=[]) ?includedir name compiler =
   begin match includedir with
     | Some dir -> 
-      let add_includedir = A (CppCompiler.BuildFlags.add_include_path dir compiler) in
+      let add_includedir = A (Compiler.BuildFlags.add_include_path dir compiler) in
       flag [ "compile" ; "c"   ; "use_"^name ] & S [A "-ccopt" ; add_includedir] ;
       flag [ "compile" ; "c++" ; "use_"^name ] add_includedir
     | None -> ()
   end ;
 
   let link_one to_c lib =
-    let open CppCompiler.Library in
+    let open Compiler.Library in
     match lib.kind with
       | Library -> 
 	if to_c

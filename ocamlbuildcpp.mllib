@@ -1,9 +1,2 @@
-Conf
-CppCompiler
-File
-Env
-Find
-FindSfml
-FindBoost
-Rule
-CppLibrary
+OcamlbuildCppConfiguration
+OcamlbuildCpp

@@ -1,10 +1,6 @@
+open OcamlbuildCppConfiguration
 
-
-
-
-
-(**
-   may_retry f args: apply f to args until success **)
+(** may_retry f args: apply f to args until success **)
 let rec may_retry f = function
   | [] -> None
   | arg :: t ->
@@ -42,7 +38,7 @@ let find_file ?(paths=[]) ?(path_suffixes=[""]) file =
     ) paths [] 
   in
 
-
+  
   let framework_header file =
     let reg = Str.regexp "\\([A-Za-z][A-Za-z0-9_]*\\)/\\([A-Za-z][A-Za-z0-9_]*\\.hpp\\)" in
     if Str.string_match reg file 0
@@ -51,9 +47,9 @@ let find_file ?(paths=[]) ?(path_suffixes=[""]) file =
   in
   
   let files_to_look =
-    if Conf.OS.(current = Mac)
+    if OS.(current = Mac)
     then 
-      let open CppCompiler.Library.Mac in
+      let open Compiler.Library.Mac in
       match !policy with 
 	| PreferFramework -> [ framework_header file ; Some file ]
 	| PreferLibrary -> [ Some file ; framework_header file ]
@@ -66,7 +62,7 @@ let find_file ?(paths=[]) ?(path_suffixes=[""]) file =
 
 
 let find_library_impl fullpaths ~static cppcompiler name =
-  let open CppCompiler.Library in
+  let open Compiler.Library in
   let library_filename name =
     if static
     then  static_library_filename name cppcompiler
@@ -74,7 +70,7 @@ let find_library_impl fullpaths ~static cppcompiler name =
   in
 
   let files_to_look  =
-    if Conf.OS.(current = Mac)
+    if OS.(current = Mac)
     then 
       match Mac.(!policy) with 
 	| Mac.PreferFramework -> [ framework_filename name cppcompiler ; library_filename name]
@@ -104,6 +100,7 @@ let find_library ?(paths=[]) ?(path_suffixes=[""]) ~static cppcompiler names =
     | None -> raise Not_found
 
 
+(** for_each_line filename f: apply f to each line of file "filename" **) 
 let for_each_line filename f =
   let chan = open_in filename in
   try

@@ -5,6 +5,8 @@ open Command
 let _ = 
   dispatch begin function
     | After_rules ->
+      Pathname.define_context "Cpp" [ "Configuration" ; "Cpp" ] ;
+
       let archive = "libconf_stubs."^ !Options.ext_lib in
       let dynalib = "dllconf_stubs."^ !Options.ext_dll in
 

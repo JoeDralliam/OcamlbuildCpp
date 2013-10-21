@@ -1,2 +1,5 @@
-<*.cm{x,}a>: use_libconf_stubs, use_libocamlbuildcpp, package(str), package(unix), package(ocamlbuild)
-<*.ml>: package(str), package(unix), package(ocamlbuild)
+<Configuration/*.cmx>: for-pack(OcamlbuildCppConfiguration)
+<Cpp/*.cmx>: for-pack(OcamlbuildCpp)
+<ocamlbuildcpp.cm{x,}a>: use_libconf_stubs
+<ocamlbuildcpp.cm{x,}a>: package(str), package(unix), package(ocamlbuild)
+<**/*.ml>: package(str), package(unix), package(ocamlbuild)

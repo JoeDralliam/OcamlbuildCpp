@@ -1,4 +1,5 @@
-open CppCompiler
+open OcamlbuildCppConfiguration
+open Compiler
 
 module BoostConfiguration =
 struct
@@ -29,7 +30,7 @@ struct
 
 
   let guess_compiler_prefix comp boost_version =
-    match comp with
+    match fst comp with
     | MSVC -> begin
         match (Version.msvc_major (), Version.msvc_minor ()) with
         | (11, _) -> "-vc110"
@@ -45,7 +46,7 @@ struct
     | MinGW -> "-mgw" ^ (Version.dumpversion comp)
     | Gcc when (boost_version.major * 100 + boost_version.minor) < 134 -> "-gcc"
     | Gcc ->
-      if Conf.OS.(current = Mac)
+      if OS.(current = Mac)
       then 
         if boost_version.minor > 35
         then "-xgcc" ^ (Version.dumpversion comp)
@@ -53,7 +54,7 @@ struct
       else "-gcc" ^ (Version.dumpversion comp)
     | Clang when (boost_version.major * 100 + boost_version.minor) < 134 -> "-gcc"
     | Clang ->
-      if Conf.OS.(current = Mac)
+      if OS.(current = Mac)
       then 
         if boost_version.minor > 35
         then "-clang-darwin" ^ (Version.dumpversion comp)
@@ -130,7 +131,7 @@ struct
     
   let library_names ~static ~cppcompiler component (version, lib_version) =
     let lib_prefix =
-      if Conf.OS.(current = Windows) && static && cppcompiler <> Cygwin
+      if OS.(current = Windows) && static && fst cppcompiler <> Cygwin
       then "lib"
       else ""
     in
@@ -153,10 +154,10 @@ struct
   let as_human_version = fst 
 end
 
-module Boost = Find.Make(BoostConfiguration)
+module Boost = FindLibrary.Make(BoostConfiguration)
 
 (* 
-open CppCompiler
+open Compiler
 
 type components =
   System | Filesystem | DateTime | Iostreams | Regex | Thread | ProgramOptions | Signals
@@ -215,7 +216,7 @@ let guess_compiler_prefix comp boost_version =
   | MinGW -> "-mgw" ^ (Version.dumpversion comp)
   | Gcc when (boost_version.major * 100 + boost_version.minor) < 134 -> "-gcc"
   | Gcc ->
-     if Conf.OS.(current = Mac)
+     if OS.(current = Mac)
      then 
        if boost_version.minor > 35
        then "-xgcc" ^ (Version.dumpversion comp)
@@ -223,7 +224,7 @@ let guess_compiler_prefix comp boost_version =
      else "-gcc" ^ (Version.dumpversion comp)
   | Clang when (boost_version.major * 100 + boost_version.minor) < 134 -> "-gcc"
   | Clang ->
-     if Conf.OS.(current = Mac)
+     if OS.(current = Mac)
      then 
        if boost_version.minor > 35
        then "-clang-darwin" ^ (Version.dumpversion comp)
@@ -339,7 +340,7 @@ let find
   let (version,lib_version) = extract_version boost_includedir in
   Printf.printf "Found boost version %s" lib_version ;
   let lib_prefix =
-    if Conf.OS.(current = Windows) && static && comp <> Cygwin
+    if OS.(current = Windows) && static && comp <> Cygwin
     then "lib"
     else ""
   in

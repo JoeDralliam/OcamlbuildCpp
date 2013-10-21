@@ -70,5 +70,5 @@ struct
   let as_human_version version = version
 end
 
-module Sfml = Find.Make(SfmlConfiguration)
+module Sfml = FindLibrary.Make(SfmlConfiguration)
 

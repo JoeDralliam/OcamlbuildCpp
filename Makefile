@@ -11,18 +11,20 @@ clean:
 
 install: uninstall
 	ocamlfind install ocamlbuildcpp META _build/ocamlbuildcpp.cm[a,xa] \
+					_build/ocamlbuildCppConfiguration.cm[i,x,o] \
+					_build/ocamlbuildCpp.cm[i,x,o] \
 					_build/ocamlbuildcpp.* \
 					_build/libconf_stubs.* \
 					_build/dllconf_stubs.* \
-					_build/conf.cm[i,x,o] \
-					_build/cppCompiler.cm[i,x,o] \
-					_build/file.cm[i,x,o] \
-					_build/env.cm[i,x,o] \
-					_build/find.cm[i,x,o] \
-					_build/findSfml.cm[i,x,o] \
-					_build/findBoost.cm[i,x,o] \
-					_build/rule.cm[i,x,o] \
-					_build/cppLibrary.cm[i,x,o]
+					_build/Configuration/oS.cm[x,o] \
+					_build/Configuration/env.cm[i,x,o] \
+					_build/Cpp/compiler.cm[x,o] \
+					_build/Cpp/file.cm[x,o] \
+					_build/Cpp/findLibrary.cm[x,o] \
+					_build/Cpp/findSfml.cm[x,o] \
+					_build/Cpp/findBoost.cm[x,o] \
+					_build/Cpp/rule.cm[x,o] \
+					_build/Cpp/library.cm[x,o]
 
 uninstall:
 	ocamlfind remove ocamlbuildcpp

@@ -1,11 +1,12 @@
+open OcamlbuildCppConfiguration
 open Ocamlbuild_plugin
 open Pathname
 
 let add_cpp_rules cppcompiler =
-  let compiler_name = CppCompiler.name cppcompiler in
-  let compile = A (CppCompiler.BuildFlags.command cppcompiler) in
-  let obj = CppCompiler.object_extension cppcompiler in
-  let os_name = Conf.OS.(name current) in
+  let compiler_name = Compiler.name cppcompiler in
+  let compile = A (Compiler.BuildFlags.command cppcompiler) in
+  let obj = Compiler.object_extension cppcompiler in
+  let os_name = OS.(name current) in
 
 
   rule "c++ : cpp -> (o|obj)"
@@ -15,8 +16,8 @@ let add_cpp_rules cppcompiler =
         let obj = env ("%." ^ obj) in
         let tags = tags_of_pathname cpp ++ "compile" ++ "c++" ++ compiler_name ++ os_name in
 
-        let nolink = CppCompiler.BuildFlags.nolink cppcompiler in
-        let output = CppCompiler.BuildFlags.output_obj cppcompiler obj in
+        let nolink = Compiler.BuildFlags.nolink cppcompiler in
+        let output = Compiler.BuildFlags.output_obj cppcompiler obj in
 
         Cmd (S [ compile ; A nolink ; A cpp ; T tags ; A output ] )
       ) 
