@@ -59,7 +59,7 @@ struct
   let library_search_dirs_from_root rt = [rt]
   let library_search_dirs_from_includedir _ = [] 
   let library_search_dirs_system _ = includedir_search_paths_system
-  let library_search_dirs_suffixes = [ "" ; "lib" ; "lib64" ]
+  let library_search_dirs_suffixes = [ "" ; "lib" ; "lib64" ; "lib/x86_64-linux-gnu" ]
   let library_names ~static ~cppcompiler component _ =
     let suffix = if static then "-s" else "" in  
     let component_string = string_of_component component in
