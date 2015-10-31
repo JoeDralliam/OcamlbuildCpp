@@ -1,6 +1,6 @@
 opam-version: "1.2"
 name: "ocamlbuildcpp-dev"
-version: "O.1"
+version: "0.2"
 maintainer: "Joe Dralliam <jdralliam@gmail.com>"
 authors: "Joe Dralliam <jdralliam@gmail.com>"
 homepage: ""
